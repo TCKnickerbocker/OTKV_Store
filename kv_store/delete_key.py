@@ -2,7 +2,7 @@
 from kv_store import kv_store, kv_lock
 
 def delete_key(key):
-    # Safely delete the key from the kv_store using the lock
+    # Safely delete the key from kv_store using lock
     with kv_lock:
         if key in kv_store:
             del kv_store[key]

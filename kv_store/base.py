@@ -17,8 +17,8 @@ log_queue = Queue()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("kv_store_operations")
 
+# Log worker continuously writes from queue to logfile
 def log_worker():
-    """Thread worker that writes log entries from the queue to a file."""
     with open("../logs/kv_store_operations.log", "a") as logfile:
         while True:
             log_entry = log_queue.get()
@@ -32,8 +32,8 @@ def log_worker():
 log_thread = threading.Thread(target=log_worker, daemon=True)
 log_thread.start()
 
+# Get time & format log operation
 def log_operation(operation_type, key, result):
-    """Log an operation to the file asynchronously."""
     timestamp = time.ctime()
     log_entry = f"{timestamp} - {operation_type.upper()} - key: {key}, result: {result}"
     log_queue.put(log_entry)
@@ -41,15 +41,17 @@ def log_operation(operation_type, key, result):
 # Helper function to handle retries for setting a key-value pair
 def handle_set_thread(key, value, timeout=0.01):
     result = [None]
+    # Call thread, append results to result
     thread = threading.Thread(target=lambda: result.append(set_value(key, value)))
     thread.start()
     thread.join(timeout)
 
+    # If timeout occurs, send another thread out
     if thread.is_alive():
         thread = threading.Thread(target=lambda: result.append(set_value(key, value)))
         thread.start()
         thread.join(timeout)
-
+    # Both threads failed - return failure
     if thread.is_alive():
         return None
     return result[1]
@@ -57,15 +59,18 @@ def handle_set_thread(key, value, timeout=0.01):
 # Helper function to handle retries for getting a value
 def handle_get_thread(key, timeout=0.01):
     result = [None]
+    # Call thread, append results to result
     thread = threading.Thread(target=lambda: result.append(get_value(key)))
     thread.start()
     thread.join(timeout)
 
+    # If timeout occurs, send another thread out
     if thread.is_alive():
         thread = threading.Thread(target=lambda: result.append(get_value(key)))
         thread.start()
         thread.join(timeout)
-
+        
+    # Both threads failed - return failure
     if thread.is_alive():
         return None
     return result[1]
@@ -73,15 +78,18 @@ def handle_get_thread(key, timeout=0.01):
 # Helper function to handle retries for deleting a key
 def handle_delete_thread(key, timeout=0.01):
     result = [None]
+    # Call thread, append results to result
     thread = threading.Thread(target=lambda: result.append(delete_key(key)))
     thread.start()
     thread.join(timeout)
-
+    
+    # If timeout occurs, send another thread out
     if thread.is_alive():
         thread = threading.Thread(target=lambda: result.append(delete_key(key)))
         thread.start()
         thread.join(timeout)
-
+        
+    # Both threads failed - return failure
     if thread.is_alive():
         return None
     return result[1]
@@ -89,10 +97,11 @@ def handle_delete_thread(key, timeout=0.01):
 # Set a key-value pair
 @app.route('/<key>', methods=['POST'])
 def set_value_app(key):
+    # Get data
     data = request.get_json()
     if 'value' not in data:
         return jsonify({"error": "Missing 'value' in request body"}), 400
-
+    # Call handler, return appropriately
     res = handle_set_thread(key, data['value'])
     log_operation('set', key, 'success' if res else 'timeout')
     if res is None:
@@ -102,6 +111,7 @@ def set_value_app(key):
 # Get the value for a key
 @app.route('/<key>', methods=['GET'])
 def get_value_app(key):
+    # Get result, return appropraitely
     res = handle_get_thread(key)
     log_operation('get', key, 'success' if res else 'not found')
     if res is None:
@@ -111,14 +121,14 @@ def get_value_app(key):
 # Delete a key
 @app.route('/<key>', methods=['DELETE'])
 def delete_value_app(key):
-    print("Delete called")
+    # Get result, return appropraitely  
     res = handle_delete_thread(key)
     log_operation('delete', key, 'success' if res else 'timeout')
     if res is None:
         return jsonify({"error": "Timeout deleting key"}), 504
     return jsonify({"message": f"Key '{key}' deleted successfully."}), 200
 
-# Periodic kv_store logging
+# Periodic logging of entire kv_store
 def print_pulse():
     threading.Timer(10.0, print_pulse).start()
     try:
