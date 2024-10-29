@@ -96,6 +96,7 @@ for i in range(NUM_THREADS * OPS_PER_THREAD):
     op_type = random.choice(['get', 'set', 'delete'])
     key = random.choice(keys)
     value = f"value_{i}" if op_type == 'set' else None
+    print(op_type, key, value)
     operations_queue.put((op_type, key, value))
 
 

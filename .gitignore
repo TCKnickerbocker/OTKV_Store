@@ -1,2 +1,5 @@
 ./kv_store/__pycache__/
+kv_store/__pycache__/*
 __pycache__/*
+./logs/*
+dump.rdb

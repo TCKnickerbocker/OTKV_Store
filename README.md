@@ -28,7 +28,6 @@ Logging: Logging operations in a multi-threaded environment had to be handled ca
 - Distributed Architecture: Future versions could include a distributed setup where the key-value store is spread across multiple nodes, enabling horizontal scaling.
 - Timeout detection for nodes acquiring locks: could be implemented via 'pulses' being sent from worker threads to the primary control thread
 - Faster Task Delegation via having a layer of controlets handle more of the returning logic once a request has been received by the server 
-- Utilizing datalets such as dragonfly or redis
 - Chaining nodes and 'dirty copies' to  allow for faster synchronous responses at distributed scale
 - Adding a queue of tasks to the multiple threads working under the master thread, and perhaps having a thread-safe way to access that
 - Adding data replication to nodes increased safety in the event of failures
@@ -36,3 +35,7 @@ Logging: Logging operations in a multi-threaded environment had to be handled ca
 - Machine learning to adjust which jobs are sent to which nodes via estimation of task length, task priority, and efficiency of respective nodes
 
 
+
+
+#### DEVNOTES:
+redis-server starts on 6379, must be done before running main.py
