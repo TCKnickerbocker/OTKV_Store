@@ -11,7 +11,6 @@ from delete_key import handle_delete_thread
 from kv_store import kv_store
 from logger import log_operation, log_queue, log_thread
 
-
 app = Flask(__name__)
 
 
@@ -65,6 +64,7 @@ def print_pulse():
         print(f"Error writing to log file: {e}")
 
 if __name__ == '__main__':
+
     pulse_thread = threading.Thread(target=print_pulse, daemon=True)
     pulse_thread.start()
     app.run(host='0.0.0.0', port=8080)

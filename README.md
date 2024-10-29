@@ -38,4 +38,10 @@ Logging: Logging operations in a multi-threaded environment had to be handled ca
 
 
 #### DEVNOTES:
-redis-server starts on 6379, must be done before running main.py
+Run on local:
+mac build: $) docker run -p 6379:6379 --ulimit memlock=-1 docker.dragonflydb.io/dragonflydb/dragonfly
+or redis-server for regular redis
+then:
+python3 main.py
+or 
+docker build compose

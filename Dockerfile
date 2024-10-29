@@ -2,10 +2,10 @@ FROM python:3.8-slim
 
 WORKDIR /app
 
-# Copy the requirements file into the container
+# Copy requirements file into container
 COPY requirements.txt .
 
-# Install the dependencies
+# Install dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Download and install DragonflyDB
@@ -14,11 +14,11 @@ RUN apt-get update && \
     curl -L https://github.com/dragonflydb/dragonfly/releases/latest/download/dragonfly-x86_64.tar.gz | tar xz && \
     mv dragonfly-x86_64 /usr/local/bin/dragonfly
 
-# Copy the rest of the application code into the container
+# Copy the rest of app code to container
 COPY . .
 
-# Expose the necessary ports
+# Expose ports
 EXPOSE 8080 6379
 
-# Start Dragonfly in the background and then run the main Python app
+# Start Dragonfly in the background and then run main Python app
 CMD ["sh", "-c", "dragonfly --port 6379 & python3 main.py"]
