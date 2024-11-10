@@ -1,12 +1,30 @@
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 services:
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
 
-  app:
+  app1:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  app2:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  app3:
     build: .
     ports:
       - "8080:8080"
