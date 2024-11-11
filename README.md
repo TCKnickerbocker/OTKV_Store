@@ -42,7 +42,7 @@ along with:
 present in the nodes array in kv_store.py
 
 Run 2 KV-Value on local:
-mac build (all separate terminals): $) redis-server
+mac build (all separate terminals): $) redis-server <br/>
 redis-server --port 6380
 then:
 python3 main.py
@@ -52,8 +52,8 @@ along with:
 present in the nodes array in kv_store.py
 
 Run 3 KV-Value on local:
-mac build (all separate terminals): $) redis-server
-redis-server --port 6380
+mac build (all separate terminals): $) redis-server \n
+redis-server --port 6380 \n
 redis-server --port 6381
 then:
 python3 main.py
