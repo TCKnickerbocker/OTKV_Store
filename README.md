@@ -34,33 +34,33 @@ From the previous statistics and graphs, it is quite obvious that the more serve
 
 #### DEVNOTES:
 Run 1 KV-Value on local:
-mac build (all separate terminals): $) redis-server
-then:
-python3 main.py
-along with:
-{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},
-present in the nodes array in kv_store.py
+mac build (all separate terminals): $) redis-server \n
+then:\n
+python3 main.py\n
+along with:\n
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},\n
+present in the nodes array in kv_store.py\n
 
-Run 2 KV-Value on local:
-mac build (all separate terminals): $) redis-server <br/>
-redis-server --port 6380
-then:
-python3 main.py
-along with:
-{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},
-{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},
-present in the nodes array in kv_store.py
+Run 2 KV-Value on local:\n
+mac build (all separate terminals): $) redis-server\n
+redis-server --port 6380\n
+then:\n
+python3 main.py\n
+along with:\n
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},\n
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},\n
+present in the nodes array in kv_store.py\n
 
-Run 3 KV-Value on local:
+Run 3 KV-Value on local:\n
 mac build (all separate terminals): $) redis-server \n
 redis-server --port 6380 \n
-redis-server --port 6381
-then:
-python3 main.py
-along with:
-{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},
-{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},
-{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6381))},
+redis-server --port 6381\n
+then:\n
+python3 main.py\n
+along with:\n
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},\n
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},\n
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6381))},\n
 present in the nodes array in kv_store.py
 
 
