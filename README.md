@@ -24,6 +24,20 @@ Throughput: 804.66 operations per second
 Average Latency: 0.00757 seconds per operation
 ![Unknown-2](https://github.com/user-attachments/assets/8b52d8db-5ed6-4615-b5ec-9237af92d232)
 
+2 KV-Stores Final Results:
+Total operations: 600
+Total time: 0.75 seconds
+Throughput: 804.66 operations per second
+Average Latency: 0.00757 seconds per operation
+![Unknown-2](https://github.com/user-attachments/assets/8b52d8db-5ed6-4615-b5ec-9237af92d232)
+
+3 KV-Stores Final Results:
+Total operations: 600
+Total time: 0.67 seconds
+Throughput: 900.71 operations per second
+Average Latency: 0.00665 seconds per operation
+![Unknown-3](https://github.com/user-attachments/assets/836ce81e-3181-482d-a766-a880ee0f13ba)
+
 3 KV-Stores Final Results:
 Total operations: 600
 Total time: 0.67 seconds
