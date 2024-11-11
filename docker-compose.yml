@@ -6,25 +6,7 @@ services:
     ports:
       - "6379:6379"
 
-  app1:
-    build: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - redis
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-  app2:
-    build: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - redis
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-  app3:
+  app:
     build: .
     ports:
       - "8080:8080"

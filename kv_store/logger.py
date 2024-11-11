@@ -2,6 +2,7 @@ import logging
 import threading
 import time
 from queue import Queue
+from kv_store import kv_store
 
 # Set up a logging queue
 log_queue = Queue()
@@ -30,3 +31,14 @@ def log_operation(operation_type, key, result):
     timestamp = time.ctime()
     log_entry = f"{timestamp} - {operation_type.upper()} - key: {key}, result: {result}"
     log_queue.put(log_entry)
+
+
+# Periodic logging of entire kv_store
+def log_entire_store():
+    threading.Timer(10.0, log_entire_store).start()
+    try:
+        with open("./logs/kv_store_contents.log", "w") as logfile:
+            logfile.write(f"{time.ctime()}: {kv_store.get('*')}\n")
+    except Exception as e:
+        print(f"Error writing to log file: {e}")
+        

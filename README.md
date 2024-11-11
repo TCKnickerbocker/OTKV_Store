@@ -1,47 +1,66 @@
 # OTKV: Our KV-Archetecture
-## Thomas Knickerbocker, Owen Ratgen 
+
+## Thomas Knickerbocker, Owen Ratgen
+
 ## CSCI5980: Special Topics - Cloud Computing
 
-## 1. Design Decisions
-The architecture of OTKV consists of a primary thread which handles incoming requests by delegating them to a thread handler based upon their request type. The thread handler then calls the appropriate function, which will return a value indicating whether it was successful or not. If returns don't occur for some time, another thread will be started for the same function, and after a timeout, if neither thread has returned a failure is issued to the client.
-Locks are utilized for operations involving writing to the kv store to maintain a synchronous system, however this can lead to bottlenecks, especially if the thread currently acquiring the lock sporadically dies, so future changes to alleviate this issue are proposed in the 'future changes' section below.
+## 1. Implementation Process
 
-### File Structure:
-- benchmark.py: a testfile that can be run to evaluate the latency and throughput of the kv store
--  base.py: the base of the flask app. Includes logging and handlers for different operations
-- set_value.py: handles value setting within the kv store
-- get_value.py: handles value retrieval within the kv store
-- delete_key.py: handles key deletion within the kv store
-- kc_store.py: initializes the kv_store variable and its accompanying lock
+We were able to get our KV-Store to use consistent hashing through a Python library called "uhashring" where it takes in N nodes that use N different hosts to ensure consistent hashing is being performed properly. We originally had our docker container working originally but we ran into a huge roadblock with DragonflyDB and need to discuss about whether or not we can still use it.
 
+## 2. Statistics
 
-## 2. Challenges faced & how they were Overcame:
-Thread Safety: One of the major challenges was ensuring thread safety for the kv_store. To avoid race conditions, we implemented locks sections of code that wrote to or deleted from the key value store.
-Timeout Handling: Implementing a robust timeout mechanism required careful management of threads. Threads that exceeded the defined timeout were terminated and retried.
-Logging: Logging operations in a multi-threaded environment had to be handled carefully to avoid bottlenecks. We used a separate logging thread to asynchronously write operations to the log file, and would periodically write the contents of the entire kv_store to a separate logfile.
+1 KV-Store Final Results:
+Total operations: 600
+Total time: 0.86 seconds
+Throughput: 700.36 operations per second
+Average Latency: 0.00858 seconds per operation
+![Unknown](https://github.com/user-attachments/assets/86a1c0a7-d3b1-4ec2-8417-84912365c99d)
 
-## 3. Assumptions:
-- Run under the assumption that all requests are incoming to a single port, and there is only one node working to handle them 
-- Timeouts and retry mechanisms were set to conservative values, assuming that most requests would be processed quickly under normal conditions.
+2 KV-Stores Final Results:
+Total operations: 600
+Total time: 0.75 seconds
+Throughput: 804.66 operations per second
+Average Latency: 0.00757 seconds per operation
+![Unknown-2](https://github.com/user-attachments/assets/8b52d8db-5ed6-4615-b5ec-9237af92d232)
 
-## 4. Potential improvements and features for future versions:
-- Distributed Architecture: Future versions could include a distributed setup where the key-value store is spread across multiple nodes, enabling horizontal scaling.
-- Timeout detection for nodes acquiring locks: could be implemented via 'pulses' being sent from worker threads to the primary control thread
-- Faster Task Delegation via having a layer of controlets handle more of the returning logic once a request has been received by the server 
-- Chaining nodes and 'dirty copies' to  allow for faster synchronous responses at distributed scale
-- Adding a queue of tasks to the multiple threads working under the master thread, and perhaps having a thread-safe way to access that
-- Adding data replication to nodes increased safety in the event of failures
-- Improved hashing of kv_store via a custom class and data structure
-- Machine learning to adjust which jobs are sent to which nodes via estimation of task length, task priority, and efficiency of respective nodes
+3 KV-Stores Final Results:
+Total operations: 600
+Total time: 0.67 seconds
+Throughput: 900.71 operations per second
+Average Latency: 0.00665 seconds per operation
+![Unknown-3](https://github.com/user-attachments/assets/836ce81e-3181-482d-a766-a880ee0f13ba)
 
-
-
+From the previous statistics and graphs, it is quite obvious that the more servers we have for consistent hashing, the lower the overall and average latency will be but the higher the overall throughput will be. There are tradeoffs to the two but I would take performance over number of operations in a heart beat.
 
 #### DEVNOTES:
-Run on local:
-mac build: $) docker run -p 6379:6379 --ulimit memlock=-1 docker.dragonflydb.io/dragonflydb/dragonfly
-or redis-server for regular redis
-then:
-python3 main.py
-or 
-docker build compose
+
+Run 1 KV-Value on local:
+mac build (all separate terminals): $) redis-server <br/>
+then:<br/>
+python3 main.py<br/>
+along with:<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},<br/>
+present in the nodes array in kv_store.py<br/>
+
+Run 2 KV-Value on local:<br/>
+mac build (all separate terminals): $) redis-server<br/>
+redis-server --port 6380<br/>
+then:<br/>
+python3 main.py<br/>
+along with:<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},<br/>
+present in the nodes array in kv_store.py<br/>
+
+Run 3 KV-Value on local:<br/>
+mac build (all separate terminals): $) redis-server<br/>
+redis-server --port 6380<br/>
+redis-server --port 6381<br/>
+then:<br/>
+python3 main.py<br/>
+along with:<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6381))},<br/>
+present in the nodes array in kv_store.py

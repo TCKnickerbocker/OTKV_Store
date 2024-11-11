@@ -1,5 +1,6 @@
 # set_value.py
-from kv_store import kv_store, kv_lock
+from kv_store import kv_store
+from lock_manager import kv_lock
 import threading
 
 # Helper function to handle retries for setting a key-value pair

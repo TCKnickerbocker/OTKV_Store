@@ -9,7 +9,7 @@ from get_value import handle_get_thread
 from set_value import handle_set_thread
 from delete_key import handle_delete_thread
 from kv_store import kv_store
-from logger import log_operation, log_queue, log_thread
+from logger import log_operation, log_queue, log_thread, log_entire_store
 
 app = Flask(__name__)
 
@@ -44,7 +44,7 @@ def delete_value_app(key):
     # Get result, return appropriately  
     res = handle_delete_thread(key)
     if res is None:
-        log_operation('timeout')
+        log_operation('timeout', None, None)
         return jsonify({"error": "Timeout deleting key"}), 504
     elif res == -1:
         log_operation('delete', key, 'did not exist')
@@ -54,18 +54,9 @@ def delete_value_app(key):
         return jsonify({"message": f"Key '{key}' deleted successfully."}), 200
 
 
-# Periodic logging of entire kv_store
-def print_pulse():
-    threading.Timer(10.0, print_pulse).start()
-    try:
-        with open("./logs/kv_store_contents.log", "w") as logfile:
-            logfile.write(f"{time.ctime()}: {kv_store.get('*')}\n")
-    except Exception as e:
-        print(f"Error writing to log file: {e}")
 
 if __name__ == '__main__':
-
-    pulse_thread = threading.Thread(target=print_pulse, daemon=True)
+    pulse_thread = threading.Thread(target=log_entire_store, daemon=True)
     pulse_thread.start()
     app.run(host='0.0.0.0', port=8080)
 
