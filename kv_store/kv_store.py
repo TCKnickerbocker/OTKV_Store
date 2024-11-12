@@ -4,37 +4,69 @@ import redis
 import os
 from uhashring import HashRing
 
-# Setting up nodes for uhashring
-nodes = [
-    {"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},
-    {"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},
-    {"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6381))},
-]
 
-# Attempt to connect to Redis and use an in-memory store as a backup
 class KVStore:
-    def __init__(self, use_redis=True):
+    def __init__(self, num_nodes=3, use_redis=True, base_port=6379):
+        """
+        Initialize KV Store with dynamic number of nodes
+        
+        Args:
+            num_nodes (int): Number of Redis nodes to create
+            use_redis (bool): Whether to use Redis or fallback to in-memory
+            base_port (int): Starting port number for Redis nodes
+        """
         self.store = {}  # In-memory dictionary as backup
         self.use_redis = use_redis
-        self.ring = HashRing(nodes=['node1'])
         self.redis_clients = {}
+        
+        # Generate nodes configuration
+        self.nodes = []
+        redis_host = os.getenv("REDIS_HOST", "localhost")
+        
+        # In Docker, we need to handle multiple Redis services
+        if os.getenv("DOCKER_ENV"):
+            # Expect Redis services to be named redis-1, redis-2, etc.
+            for i in range(num_nodes):
+                self.nodes.append({
+                    "host": f"redis-{i+1}",  # Docker service name
+                    "port": base_port  # Each service runs on the same port
+                })
+        else:
+            # Local development - use different ports on localhost
+            for i in range(num_nodes):
+                self.nodes.append({
+                    "host": redis_host,
+                    "port": base_port + i
+                })
+
+        # Initialize HashRing with node names
+        node_names = [f"node{i+1}" for i in range(num_nodes)]
+        self.ring = HashRing(nodes=node_names)
+
         if use_redis:
-            for idx, node in enumerate(nodes):
+            for idx, node in enumerate(self.nodes):
                 try:
                     # Attempt to initialize Redis client
-                    client = redis.Redis(host=node['host'], port=node['port'], decode_responses=True)
+                    client = redis.Redis(
+                        host=node['host'], 
+                        port=node['port'], 
+                        decode_responses=True,
+                        socket_connect_timeout=2.0  # Add timeout for connection attempts
+                    )
                     # Test connection by pinging Redis
                     client.ping()
                     self.redis_clients[f"node{idx+1}"] = client
-                    print(f"Connected to Redis node{idx+1}")
-                except redis.exceptions.ConnectionError:
-                    print("Redis connection failed. Using in-memory store as backup.")
-                    self.use_redis = False  # Fallback to in-memory store
+                    print(f"Connected to Redis {node['host']}:{node['port']} as node{idx+1}")
+                except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as e:
+                    print(f"Redis connection failed for {node['host']}:{node['port']}: {str(e)}")
+                    if idx == 0:  # If first node fails, fallback to in-memory
+                        print("Primary Redis connection failed. Using in-memory store as backup.")
+                        self.use_redis = False
+                        break
 
     def get_client(self, key):
         node = self.ring.get_node(key)
-        # print(f"Key: {key}, Assigned Node: {node}")
-        return self.redis_clients[node]
+        return self.redis_clients.get(node)
 
     def get(self, key):
         # Retrieve value from Redis if available, otherwise from the in-memory store
@@ -79,4 +111,4 @@ class KVStore:
             return all_keys
         return list(self.store.keys())
 
-kv_store = KVStore(use_redis=True)
+kv_store = KVStore()
