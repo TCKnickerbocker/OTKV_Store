@@ -1,8 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import sys
-# sys.path.append("./kv_store")
 
 from get_value import handle_get_thread
 from set_value import handle_set_thread
