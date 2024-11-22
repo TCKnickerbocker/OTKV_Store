@@ -12,7 +12,7 @@ We were able to get our KV-Store to use consistent hashing through a Python libr
 
 1 KV-Store Final Results:
 Total operations: 600
-Total time: 0.86 seconds 
+Total time: 0.86 seconds
 Throughput: 700.36 operations per second
 Average Latency: 0.00858 seconds per operation
 ![Unknown](https://github.com/user-attachments/assets/86a1c0a7-d3b1-4ec2-8417-84912365c99d)
