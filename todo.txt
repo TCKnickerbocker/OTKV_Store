@@ -1,3 +1,0 @@
-- make a makefile to delete caches each time
-- Use a distributed lock manager (zookeeper)
-- Have dockerized version run on dragonfly?
