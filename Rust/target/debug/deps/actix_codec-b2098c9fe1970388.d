@@ -1,0 +1,10 @@
+/Users/tommyknickerbocker/Desktop/Current_Courses/CloudCompute/OKTV_Store/Rust/target/debug/deps/libactix_codec-b2098c9fe1970388.rmeta: /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/lib.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/bcodec.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/framed.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/lines.rs
+
+/Users/tommyknickerbocker/Desktop/Current_Courses/CloudCompute/OKTV_Store/Rust/target/debug/deps/libactix_codec-b2098c9fe1970388.rlib: /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/lib.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/bcodec.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/framed.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/lines.rs
+
+/Users/tommyknickerbocker/Desktop/Current_Courses/CloudCompute/OKTV_Store/Rust/target/debug/deps/actix_codec-b2098c9fe1970388.d: /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/lib.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/bcodec.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/framed.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/lines.rs
+
+/Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/lib.rs:
+/Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/bcodec.rs:
+/Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/framed.rs:
+/Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/actix-codec-0.5.2/src/lines.rs:

@@ -1,0 +1,6 @@
+redis
+fastapi
+uhashring
+pydantic
+gunicorn
+fastwsgi

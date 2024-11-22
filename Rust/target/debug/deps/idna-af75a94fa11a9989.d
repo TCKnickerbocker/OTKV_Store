@@ -1,0 +1,10 @@
+/Users/tommyknickerbocker/Desktop/Current_Courses/CloudCompute/OKTV_Store/Rust/target/debug/deps/libidna-af75a94fa11a9989.rmeta: /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/lib.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/deprecated.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/punycode.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/uts46.rs
+
+/Users/tommyknickerbocker/Desktop/Current_Courses/CloudCompute/OKTV_Store/Rust/target/debug/deps/libidna-af75a94fa11a9989.rlib: /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/lib.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/deprecated.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/punycode.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/uts46.rs
+
+/Users/tommyknickerbocker/Desktop/Current_Courses/CloudCompute/OKTV_Store/Rust/target/debug/deps/idna-af75a94fa11a9989.d: /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/lib.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/deprecated.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/punycode.rs /Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/uts46.rs
+
+/Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/lib.rs:
+/Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/deprecated.rs:
+/Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/punycode.rs:
+/Users/tommyknickerbocker/.cargo/registry/src/index.crates.io-6f17d22bba15001f/idna-1.0.3/src/uts46.rs:

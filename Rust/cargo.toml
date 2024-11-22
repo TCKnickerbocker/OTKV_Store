@@ -1,0 +1,15 @@
+[package]
+name = "oktv_store"
+version = "0.1.1"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.5.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+clap = { version = "4.0", features = ["derive"] }
+chrono = "0.4"
+redis = "0.23.0"
+hashring = "0.3.6"
+lazy_static = "1.4.0"
