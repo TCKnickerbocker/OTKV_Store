@@ -24,6 +24,20 @@ Throughput: 804.66 operations per second
 Average Latency: 0.00757 seconds per operation
 ![Unknown-2](https://github.com/user-attachments/assets/8b52d8db-5ed6-4615-b5ec-9237af92d232)
 
+2 KV-Stores Final Results:
+Total operations: 600
+Total time: 0.75 seconds
+Throughput: 804.66 operations per second
+Average Latency: 0.00757 seconds per operation
+![Unknown-2](https://github.com/user-attachments/assets/8b52d8db-5ed6-4615-b5ec-9237af92d232)
+
+3 KV-Stores Final Results:
+Total operations: 600
+Total time: 0.67 seconds
+Throughput: 900.71 operations per second
+Average Latency: 0.00665 seconds per operation
+![Unknown-3](https://github.com/user-attachments/assets/836ce81e-3181-482d-a766-a880ee0f13ba)
+
 3 KV-Stores Final Results:
 Total operations: 600
 Total time: 0.67 seconds
@@ -33,23 +47,34 @@ Average Latency: 0.00665 seconds per operation
 
 From the previous statistics and graphs, it is quite obvious that the more servers we have for consistent hashing, the lower the overall and average latency will be but the higher the overall throughput will be. There are tradeoffs to the two but I would take performance over number of operations in a heart beat.
 
-## TO RUN:
+#### DEVNOTES:
 
-Run 1 KV-Value nodes locally:
+Run 1 KV-Value on local:
 mac build (all separate terminals): $) redis-server <br/>
 then:<br/>
 python3 main.py<br/>
+along with:<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},<br/>
+present in the nodes array in kv_store.py<br/>
 
-Run 2 KV-Value nodes locally:<br/>
+Run 2 KV-Value on local:<br/>
 mac build (all separate terminals): $) redis-server<br/>
 redis-server --port 6380<br/>
 then:<br/>
 python3 main.py<br/>
+along with:<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},<br/>
+present in the nodes array in kv_store.py<br/>
 
-Run 3 KV-Value nodes locally:<br/>
+Run 3 KV-Value on local:<br/>
 mac build (all separate terminals): $) redis-server<br/>
 redis-server --port 6380<br/>
 redis-server --port 6381<br/>
 then:<br/>
 python3 main.py<br/>
-
+along with:<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6379))},<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6380))},<br/>
+{"host": os.getenv("REDIS_HOST", "localhost"), "port": int(os.getenv("REDIS_PORT", 6381))},<br/>
+present in the nodes array in kv_store.py

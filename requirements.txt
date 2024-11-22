@@ -1,5 +1,3 @@
 redis
-fastapi
+flask
 uhashring
-pydantic
-uvicorn
