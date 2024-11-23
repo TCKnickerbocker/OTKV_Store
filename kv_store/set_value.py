@@ -4,7 +4,7 @@ from lock_manager import kv_lock
 import threading
 
 # Helper function to handle retries for setting a key-value pair
-def handle_set_thread(key, value, timeout=0.01):
+def handle_set_thread(key, value, timeout=0.03):
     result = [None]
     # Call thread, append results to result
     thread = threading.Thread(target=lambda: result.append(set_value(key, value)))

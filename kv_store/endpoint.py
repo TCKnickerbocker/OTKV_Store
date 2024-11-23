@@ -20,13 +20,12 @@ async def set_value_api(key: str, request: ValueRequest):
     # Call handler, return appropriately
     res = handle_set_thread(key, request.value)
     log_operation('set', key, 'success' if res else 'timeout')
-    
+
     if res is None:
         return JSONResponse(
             status_code=504, 
             content={"error": "Timeout setting value"}
         )
-    
     return {"message": f"Value for key '{key}' set successfully."}
 
 # Get the value for a key
@@ -61,3 +60,6 @@ async def delete_value_api(key: str):
     else:
         log_operation('delete', key, 'success')
         return {"message": f"Key '{key}' deleted successfully."}
+
+
+

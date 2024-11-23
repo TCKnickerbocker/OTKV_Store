@@ -1,3 +1,4 @@
 redis
-flask
+fastapi
+uvicorn
 uhashring

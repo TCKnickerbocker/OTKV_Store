@@ -130,3 +130,4 @@ print(f"Total operations: {total_ops}")
 print(f"Total time: {total_time:.2f} seconds")
 print(f"Throughput: {throughput:.2f} operations per second")
 print(f"Average Latency: {average_latency:.5f} seconds per operation")
+
