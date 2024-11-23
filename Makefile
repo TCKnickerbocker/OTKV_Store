@@ -16,4 +16,4 @@ clean:
 # Runs with one node
 run:
 	python3 main.py
-clean-run: clean run
+clean-run: clean run 

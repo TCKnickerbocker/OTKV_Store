@@ -2,3 +2,5 @@ redis
 fastapi
 uvicorn
 uhashring
+flask
+fastwsgi

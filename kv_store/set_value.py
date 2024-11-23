@@ -1,5 +1,7 @@
 # set_value.py
-from kv_store import kv_store
+# from kv_store import kv_store
+from trie_kv_store import kv_store
+
 from lock_manager import kv_lock
 import threading
 
