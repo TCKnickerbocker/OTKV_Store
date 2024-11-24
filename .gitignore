@@ -5,3 +5,6 @@ __pycache__/*
 logs/*
 */logs/*
 dump.rdb
+./kv_store/target/
+kv_store/target/*
+target/*
