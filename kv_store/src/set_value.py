@@ -1,4 +1,3 @@
-# set_value.py
 from kv_store import kv_store
 from lock_manager import kv_lock
 import threading
@@ -18,8 +17,8 @@ def handle_set_thread(key, value, timeout=0.01):
         thread.join(timeout)
     # Both threads failed - return failure
     if thread.is_alive():
-        return None
-    return result[1]
+        return "-1"
+    return f"{result[1]}"
 
 def set_value(key, value):
     # Safely set key-value pair using lock

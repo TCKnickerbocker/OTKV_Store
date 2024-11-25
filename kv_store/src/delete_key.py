@@ -19,8 +19,8 @@ def handle_delete_thread(key, timeout=0.01):
         
     # Both threads failed - return failure
     if thread.is_alive():
-        return None
-    return result
+        return "1"
+    return f"{result[0]}"
 
 
 def delete_key(key):
@@ -28,6 +28,7 @@ def delete_key(key):
     with kv_lock:
         res = kv_store.delete(key)
         print(f"delete res: {res}")
+        print(key)
         if res is not None:
-            return 0  # Key successfully deleted
+            return res[0]  # Key successfully deleted
         return -1  # Key not found

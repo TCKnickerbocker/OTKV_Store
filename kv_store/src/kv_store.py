@@ -88,6 +88,7 @@ class KVStore:
             else:
                 print(f"Key: {key} set successfully in Redis")
         else:
+            print("Failed to get client or use_redis == False")
             self.store[key] = value
         return 0
 
@@ -111,4 +112,4 @@ class KVStore:
             return all_keys
         return list(self.store.keys())
 
-kv_store = KVStore()
+kv_store = KVStore(num_nodes=1)

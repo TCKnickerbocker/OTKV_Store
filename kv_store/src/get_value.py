@@ -4,7 +4,7 @@ import threading
 
 # Helper function to handle retries for getting a value
 def handle_get_thread(key, timeout=0.01):
-    result = [None]
+    result = [-1]
     # Call thread, append results to result
     thread = threading.Thread(target=lambda: result.append(get_value(key)))
     thread.start()
@@ -17,8 +17,8 @@ def handle_get_thread(key, timeout=0.01):
         thread.join(timeout)
         
     # Both threads failed - return failure
-    if thread.is_alive():
-        return None
+    if thread.is_alive() or result[1] == None:
+        return "-1"
     return result[1]
 
 
