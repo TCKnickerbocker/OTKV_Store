@@ -6,7 +6,7 @@ from uhashring import HashRing
 
 
 class KVStore:
-    def __init__(self, num_nodes=3, use_redis=True, base_port=6379):
+    def __init__(self, num_nodes=3, use_redis=False, user_serverside_hashring=False, base_port=6379):
         """
         Initialize KV Store with dynamic number of nodes
         

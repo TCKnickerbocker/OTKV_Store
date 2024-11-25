@@ -1,5 +1,6 @@
 # get_value.py
-from kv_store import kv_store
+# from kv_store import kv_store
+from trie_kv_store import kv_store
 import threading
 
 # Helper function to handle retries for getting a value
