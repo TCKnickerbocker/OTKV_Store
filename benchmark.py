@@ -8,7 +8,7 @@ from urllib3.util.retry import Retry
 import concurrent.futures
 
 # Configure multiple nodes
-BASE_URLS = ['http://127.0.0.1:8080', 'http://127.0.0.1:8081', 'http://127.0.0.1:8082']
+BASE_URLS = ['http://127.0.0.1:8080']
 # BASE_URLS = ['http://127.0.0.1:8080']
 
 # Configure the number of threads and operations
