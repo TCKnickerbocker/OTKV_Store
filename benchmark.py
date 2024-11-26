@@ -7,6 +7,7 @@ import xxhash
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import concurrent.futures
+from uhashring import HashRing
 
 # Configure multiple nodes
 BASE_URLS = ['http://127.0.0.1:8080', 'http://127.0.0.1:8081', 'http://127.0.0.1:8082']
@@ -19,6 +20,10 @@ PRINT_INTERVAL = 1
 
 # Queues for managing latencies
 latencies_queue = deque()
+
+error_count = 0
+kv_stores = []
+ring = HashRing(BASE_URLS, hash_fn='ketama')
 
 # Synchronize the starting of threads
 start_event = threading.Event()
@@ -43,11 +48,12 @@ session_pool = queue.Queue()
 for session in sessions:
     session_pool.put(session)
 
-def fast_hash(key, num_nodes):
-    return xxhash.xxh64(key.encode()).intdigest() % num_nodes
+# def fast_hash(key, num_nodes):
+#     return xxhash.xxh64(key.encode()).intdigest() % num_nodes
 
-def kv_store_operation(session, op_type, key, node_index, value=None):
-    base_url = BASE_URLS[node_index]
+def kv_store_operation(session, op_type, key, value=None):
+    node = ring.get_node(key)
+    base_url = node
     
     try:
         if op_type == 'set':
@@ -59,10 +65,10 @@ def kv_store_operation(session, op_type, key, node_index, value=None):
             response = session.get(
                 f"{base_url}/{key}",
             )
-        # elif op_type == 'delete':
-        #     response = session.delete(
-        #         f"{base_url}/{key}",
-        #     )
+        elif op_type == 'delete':
+            response = session.delete(
+                f"{base_url}/{key}",
+            )
         else:
             raise ValueError("Invalid operation type")
         
@@ -76,16 +82,20 @@ def batch_worker(batch):
     """Process a batch of operations"""
     session = session_pool.get()
     local_latencies = []  # Use thread-local storage
+    error_count = 0
     try:
-        for op, key, value, node_index in batch:  # Precomputed node_index
+        for op, key, value in batch:
             start_time = time.time()
-            base_url = BASE_URLS[node_index]
+            node = ring.get_node(key)
+            base_url = node
+            kv_stores.append(node)
             try:
                 if op == 'set':
                     session.post(f"{base_url}/{key}", json={'value': value}).raise_for_status()
                 elif op == 'get':
                     session.get(f"{base_url}/{key}").raise_for_status()
             except Exception:
+                error_count += 1
                 pass
             local_latencies.append(time.time() - start_time)
         return local_latencies
@@ -119,9 +129,9 @@ def main():
     operations = []
     for i in range(NUM_THREADS * OPS_PER_THREAD):
         operations.extend([
-            ('set', f"key_{i}", f"value_{i}", fast_hash(f"key_{i}", len(BASE_URLS))),
-            ('get', f"key_{i}", None, fast_hash("key_{i}", len(BASE_URLS))),
-            # ('delete', f"key_{i}", None)
+            ('set', f"key_{i}", f"value_{i}"),
+            ('get', f"key_{i}", None),
+            ('delete', f"key_{i}", None)
         ])
 
     # Split operations into batches for better efficiency
@@ -159,12 +169,29 @@ def main():
 
     average_latency = sum(total_latencies) / len(total_latencies) if total_latencies else float('nan')
     throughput = total_ops / total_time
+    error_rate = error_count / total_ops
 
     print("\nFinal Results:")
     print(f"Total operations: {total_ops}")
     print(f"Total time: {total_time:.2f} seconds")
     print(f"Throughput: {throughput:.2f} operations per second")
     print(f"Average Latency: {average_latency:.5f} seconds per operation")
+    print(f"Error Rate: {error_rate:.4f}%")
+
+    kv1 = 0
+    kv2 = 0
+    kv3 = 0
+
+    for node in kv_stores:
+        if node == 'http://127.0.0.1:8080':
+            kv1 += 1
+        elif node == 'http://127.0.0.1:8081':
+            kv2 += 1
+        else:
+            kv3 += 1
+    print(f"Percent of 8080 calls: {kv1/len(kv_stores) * 100:.4f}%")
+    print(f"Percent of 8081 calls: {kv2/len(kv_stores) * 100:.4f}%")
+    print(f"Percent of 8082 calls: {kv3/len(kv_stores) * 100:.4f}%")
 
 if __name__ == "__main__":
     main()

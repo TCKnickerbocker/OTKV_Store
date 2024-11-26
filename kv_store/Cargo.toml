@@ -12,6 +12,7 @@ tokio = { version = "1", features = ["full"] }
 hashring = "0.3.6"
 redis = "0.25.0" 
 pyo3-ffi = "0.23.1"
+dashmap = "5.0"
 
 [dependencies.pyo3]
 version = "0.23.1"

@@ -4,6 +4,7 @@ use std::sync::{Arc, RwLock};
 use actix_web::{get, post, delete, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
 use tokio::task;
+use dashmap::DashMap;
 
 // Converts JSON data into this struct
 #[derive(Deserialize)]
@@ -11,7 +12,7 @@ struct PostKey {
     value: String
 }
 
-type SharedState = Arc<RwLock<HashMap<String, String>>>;
+type SharedState = Arc<RwLock<DashMap<String, String>>>;
 
 // TODO: Remove Clones
 #[post("/{key}")]
@@ -72,33 +73,33 @@ pub async fn get_value_app(state: web::Data<SharedState>, key: web::Path<String>
     }
 }
 
-// #[delete("/{key}")]
-// pub async fn delete_value_app(state: web::Data<SharedState>, key: web::Path<String>) -> impl Responder {
-//     let key = key.into_inner();
-//     let new_key = key.clone();
+#[delete("/{key}")]
+pub async fn delete_value_app(state: web::Data<SharedState>, key: web::Path<String>) -> impl Responder {
+    let key = key.into_inner();
+    let new_key = key.clone();
 
-//     let state_clone = Arc::clone(&state);
+    let state_clone = Arc::clone(&state);
 
-//     let task = tokio::spawn(async move {
-//         let mut state = state_clone.lock().unwrap();
-//         state.remove(&key)
-//     });
+    let task = tokio::spawn(async move {
+        let mut state = state_clone.write().unwrap();
+        state.remove(&key)
+    });
 
-//     match task.await {
-//         Ok(value) => {
-//             if value.is_some() {
-//                 return HttpResponse::Ok().body(format!("Found Key: {}", &new_key))
-//             } else {
-//                 return HttpResponse::NotFound().body(format!("Was not able to find Key: {}", &new_key))
-//             }
-//         }
-//         Err(_) => HttpResponse::InternalServerError().body("Error in GET key"),
-//     }
-// }
+    match task.await {
+        Ok(value) => {
+            if value.is_some() {
+                return HttpResponse::Ok().body(format!("Found Key: {}", &new_key))
+            } else {
+                return HttpResponse::NotFound().body(format!("Was not able to find Key: {}", &new_key))
+            }
+        }
+        Err(_) => HttpResponse::InternalServerError().body("Error in GET key"),
+    }
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let shared_state: SharedState = Arc::new(RwLock::new(HashMap::new()));
+    let shared_state: SharedState = Arc::new(RwLock::new(DashMap::new()));
 
     let state1 = shared_state.clone();
     let s1 = HttpServer::new(move || {
@@ -106,7 +107,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(state1.clone()))
             .service(set_value_app)
             .service(get_value_app)
-            // .service(delete_value_app)
+            .service(delete_value_app)
     })
     .bind(format!("0.0.0.0:{}", 8080))?
     .run();
@@ -119,7 +120,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(state2.clone()))
             .service(set_value_app)
             .service(get_value_app)
-            // .service(delete_value_app)
+            .service(delete_value_app)
     })
     .bind(format!("0.0.0.0:{}", 8081))?
     .run();
@@ -132,7 +133,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(state2.clone()))
             .service(set_value_app)
             .service(get_value_app)
-            // .service(delete_value_app)
+            .service(delete_value_app)
     })
     .bind(format!("0.0.0.0:{}", 8082))?
     .run();
