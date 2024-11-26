@@ -51,6 +51,6 @@ From the previous statistics and graphs, it is quite obvious that the more serve
 
 **IF RUNNING REGULARLY**
 
-1. Go into directory kv_store, download rust if you haven't already ![here](https://doc.rust-lang.org/cargo/getting-started/installation.html#:~:text=Install%20Rust%20and%20Cargo&text=Installing%20Rust%20using%20rustup%20will%20also%20install%20cargo%20.&text=It%20will%20download%20a%20script%2C%20and%20start%20the%20installation), and run cargo build --release, then cargo run --release
+1. Go into directory kv_store, download rust if you haven't already here https://doc.rust-lang.org/cargo/getting-started/installation.html#:~:text=Install%20Rust%20and%20Cargo&text=Installing%20Rust%20using%20rustup%20will%20also%20install%20cargo%20.&text=It%20will%20download%20a%20script%2C%20and%20start%20the%20installation, and run cargo build --release, then cargo run --release
 2. Go into a new terminal and run python3 benchmark.py
 
