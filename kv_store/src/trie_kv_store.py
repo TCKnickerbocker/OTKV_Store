@@ -72,10 +72,10 @@ class KVStore:
         # Traverse the trie to find the key
         for char in key:
             if char not in current.children:
-                return None
+                return "-1"
             current = current.children[char]
             
-        return current.value if current.is_end else None
+        return current.value if current.is_end else "-1"
 
     def delete(self, key):
         """

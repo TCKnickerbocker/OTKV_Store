@@ -13,7 +13,7 @@ logger = logging.getLogger("kv_store_operations")
 
 # Log worker continuously writes from queue to logfile
 def log_worker():
-    with open("./logs/kv_store_operations.log", "a") as logfile:
+    with open("../logs/kv_store_operations.log", "a") as logfile:
         while True:
             log_entry = log_queue.get()
             if log_entry is None:

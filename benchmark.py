@@ -1,11 +1,13 @@
 import threading
 import queue
+from collections import deque
 import requests
 import time
 import xxhash  
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import concurrent.futures
+from uhashring import HashRing
 
 # Configure multiple nodes
 BASE_URLS = ['http://127.0.0.1:8080', 'http://127.0.0.1:8081', 'http://127.0.0.1:8082']
@@ -13,11 +15,15 @@ BASE_URLS = ['http://127.0.0.1:8080', 'http://127.0.0.1:8081', 'http://127.0.0.1
 
 # Configure the number of threads and operations
 NUM_THREADS = 10
-OPS_PER_THREAD = 100
+OPS_PER_THREAD = 800
 PRINT_INTERVAL = 1
 
 # Queues for managing latencies
-latencies_queue = queue.Queue()
+latencies_queue = deque()
+
+error_count = 0
+kv_stores = []
+ring = HashRing(BASE_URLS, hash_fn='ketama')
 
 # Synchronize the starting of threads
 start_event = threading.Event()
@@ -27,11 +33,10 @@ def create_session():
     session = requests.Session()
     # Configure connection pooling
     adapter = HTTPAdapter(
-        pool_connections=NUM_THREADS,
-        pool_maxsize=NUM_THREADS * 2,
+        pool_connections=NUM_THREADS*2,
+        pool_maxsize=NUM_THREADS * 4,
         max_retries=Retry(
-            total=0,  # No retries for benchmark accuracy
-            backoff_factor=0
+            total=8
         )
     )
     session.mount('http://', adapter)
@@ -43,29 +48,26 @@ session_pool = queue.Queue()
 for session in sessions:
     session_pool.put(session)
 
-def fast_hash(key, num_nodes):
-    return xxhash.xxh64(key.encode()).intdigest() % num_nodes
+# def fast_hash(key, num_nodes):
+#     return xxhash.xxh64(key.encode()).intdigest() % num_nodes
 
 def kv_store_operation(session, op_type, key, value=None):
-    node_index = fast_hash(key, len(BASE_URLS))
-    base_url = BASE_URLS[node_index]
+    node = ring.get_node(key)
+    base_url = node
     
     try:
         if op_type == 'set':
             response = session.post(
                 f"{base_url}/{key}", 
                 json={'value': value},
-                timeout=1
             )
         elif op_type == 'get':
             response = session.get(
                 f"{base_url}/{key}",
-                timeout=1
             )
         elif op_type == 'delete':
             response = session.delete(
                 f"{base_url}/{key}",
-                timeout=1
             )
         else:
             raise ValueError("Invalid operation type")
@@ -79,14 +81,24 @@ def kv_store_operation(session, op_type, key, value=None):
 def batch_worker(batch):
     """Process a batch of operations"""
     session = session_pool.get()
+    local_latencies = []  # Use thread-local storage
+    error_count = 0
     try:
-        results = []
         for op, key, value in batch:
             start_time = time.time()
-            if kv_store_operation(session, op, key, value):
-                latency = time.time() - start_time
-                results.append(latency)
-        return results
+            node = ring.get_node(key)
+            base_url = node
+            kv_stores.append(node)
+            try:
+                if op == 'set':
+                    session.post(f"{base_url}/{key}", json={'value': value}).raise_for_status()
+                elif op == 'get':
+                    session.get(f"{base_url}/{key}").raise_for_status()
+            except Exception:
+                error_count += 1
+                pass
+            local_latencies.append(time.time() - start_time)
+        return local_latencies
     finally:
         session_pool.put(session)
 
@@ -98,10 +110,10 @@ def monitor_performance():
         elapsed_time = current_time - last_print
         
         latencies = []
-        while not latencies_queue.empty():
+        while latencies_queue:
             try:
-                latencies.append(latencies_queue.get_nowait())
-            except queue.Empty:
+                latencies.append(latencies_queue.popleft())
+            except IndexError:
                 break
             
         if latencies:
@@ -123,7 +135,7 @@ def main():
         ])
 
     # Split operations into batches for better efficiency
-    batch_size = 30  # Adjust based on your needs
+    batch_size = 375  # Adjust based on your needs
     batches = [operations[i:i + batch_size] for i in range(0, len(operations), batch_size)]
 
     # Start the monitoring thread
@@ -141,7 +153,7 @@ def main():
         # Collect results as they complete
         for future in concurrent.futures.as_completed(futures):
             for latency in future.result():
-                latencies_queue.put(latency)
+                latencies_queue.append(latency)
 
     # Calculate final results
     total_time = time.time() - start_time
@@ -149,20 +161,37 @@ def main():
 
     # Collect all latencies
     total_latencies = []
-    while not latencies_queue.empty():
+    while latencies_queue:
         try:
-            total_latencies.append(latencies_queue.get_nowait())
-        except queue.Empty:
+            total_latencies.append(latencies_queue.popleft())
+        except IndexError:
             break
 
     average_latency = sum(total_latencies) / len(total_latencies) if total_latencies else float('nan')
     throughput = total_ops / total_time
+    error_rate = error_count / total_ops
 
     print("\nFinal Results:")
     print(f"Total operations: {total_ops}")
     print(f"Total time: {total_time:.2f} seconds")
     print(f"Throughput: {throughput:.2f} operations per second")
     print(f"Average Latency: {average_latency:.5f} seconds per operation")
+    print(f"Error Rate: {error_rate:.4f}%")
+
+    kv1 = 0
+    kv2 = 0
+    kv3 = 0
+
+    for node in kv_stores:
+        if node == 'http://127.0.0.1:8080':
+            kv1 += 1
+        elif node == 'http://127.0.0.1:8081':
+            kv2 += 1
+        else:
+            kv3 += 1
+    print(f"Percent of 8080 calls: {kv1/len(kv_stores) * 100:.4f}%")
+    print(f"Percent of 8081 calls: {kv2/len(kv_stores) * 100:.4f}%")
+    print(f"Percent of 8082 calls: {kv3/len(kv_stores) * 100:.4f}%")
 
 if __name__ == "__main__":
     main()

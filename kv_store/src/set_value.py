@@ -1,12 +1,9 @@
-# set_value.py
-# from kv_store import kv_store
 from trie_kv_store import kv_store
-
 from lock_manager import kv_lock
 import threading
 
 # Helper function to handle retries for setting a key-value pair
-def handle_set_thread(key, value, timeout=0.03):
+def handle_set_thread(key, value, timeout=0.01):
     result = [None]
     # Call thread, append results to result
     thread = threading.Thread(target=lambda: result.append(set_value(key, value)))
@@ -20,8 +17,8 @@ def handle_set_thread(key, value, timeout=0.03):
         thread.join(timeout)
     # Both threads failed - return failure
     if thread.is_alive():
-        return None
-    return result[1]
+        return "-1"
+    return f"{result[1]}"
 
 def set_value(key, value):
     # Safely set key-value pair using lock
