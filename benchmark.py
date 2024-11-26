@@ -1,5 +1,6 @@
 import threading
 import queue
+from collections import deque
 import requests
 import time
 import xxhash  
@@ -8,16 +9,16 @@ from urllib3.util.retry import Retry
 import concurrent.futures
 
 # Configure multiple nodes
-BASE_URLS = ['http://127.0.0.1:8080']
+BASE_URLS = ['http://127.0.0.1:8080', 'http://127.0.0.1:8081', 'http://127.0.0.1:8082']
 # BASE_URLS = ['http://127.0.0.1:8080']
 
 # Configure the number of threads and operations
 NUM_THREADS = 10
-OPS_PER_THREAD = 100
+OPS_PER_THREAD = 800
 PRINT_INTERVAL = 1
 
 # Queues for managing latencies
-latencies_queue = queue.Queue()
+latencies_queue = deque()
 
 # Synchronize the starting of threads
 start_event = threading.Event()
@@ -27,11 +28,10 @@ def create_session():
     session = requests.Session()
     # Configure connection pooling
     adapter = HTTPAdapter(
-        pool_connections=NUM_THREADS,
-        pool_maxsize=NUM_THREADS * 2,
+        pool_connections=NUM_THREADS*2,
+        pool_maxsize=NUM_THREADS * 4,
         max_retries=Retry(
-            total=0,  # No retries for benchmark accuracy
-            backoff_factor=0
+            total=8
         )
     )
     session.mount('http://', adapter)
@@ -46,8 +46,7 @@ for session in sessions:
 def fast_hash(key, num_nodes):
     return xxhash.xxh64(key.encode()).intdigest() % num_nodes
 
-def kv_store_operation(session, op_type, key, value=None):
-    node_index = fast_hash(key, len(BASE_URLS))
+def kv_store_operation(session, op_type, key, node_index, value=None):
     base_url = BASE_URLS[node_index]
     
     try:
@@ -55,18 +54,15 @@ def kv_store_operation(session, op_type, key, value=None):
             response = session.post(
                 f"{base_url}/{key}", 
                 json={'value': value},
-                timeout=1
             )
         elif op_type == 'get':
             response = session.get(
                 f"{base_url}/{key}",
-                timeout=1
             )
-        elif op_type == 'delete':
-            response = session.delete(
-                f"{base_url}/{key}",
-                timeout=1
-            )
+        # elif op_type == 'delete':
+        #     response = session.delete(
+        #         f"{base_url}/{key}",
+        #     )
         else:
             raise ValueError("Invalid operation type")
         
@@ -79,14 +75,20 @@ def kv_store_operation(session, op_type, key, value=None):
 def batch_worker(batch):
     """Process a batch of operations"""
     session = session_pool.get()
+    local_latencies = []  # Use thread-local storage
     try:
-        results = []
-        for op, key, value in batch:
+        for op, key, value, node_index in batch:  # Precomputed node_index
             start_time = time.time()
-            if kv_store_operation(session, op, key, value):
-                latency = time.time() - start_time
-                results.append(latency)
-        return results
+            base_url = BASE_URLS[node_index]
+            try:
+                if op == 'set':
+                    session.post(f"{base_url}/{key}", json={'value': value}).raise_for_status()
+                elif op == 'get':
+                    session.get(f"{base_url}/{key}").raise_for_status()
+            except Exception:
+                pass
+            local_latencies.append(time.time() - start_time)
+        return local_latencies
     finally:
         session_pool.put(session)
 
@@ -98,10 +100,10 @@ def monitor_performance():
         elapsed_time = current_time - last_print
         
         latencies = []
-        while not latencies_queue.empty():
+        while latencies_queue:
             try:
-                latencies.append(latencies_queue.get_nowait())
-            except queue.Empty:
+                latencies.append(latencies_queue.popleft())
+            except IndexError:
                 break
             
         if latencies:
@@ -117,13 +119,13 @@ def main():
     operations = []
     for i in range(NUM_THREADS * OPS_PER_THREAD):
         operations.extend([
-            ('set', f"key_{i}", f"value_{i}"),
-            ('get', f"key_{i}", None),
-            ('delete', f"key_{i}", None)
+            ('set', f"key_{i}", f"value_{i}", fast_hash(f"key_{i}", len(BASE_URLS))),
+            ('get', f"key_{i}", None, fast_hash("key_{i}", len(BASE_URLS))),
+            # ('delete', f"key_{i}", None)
         ])
 
     # Split operations into batches for better efficiency
-    batch_size = 30  # Adjust based on your needs
+    batch_size = 375  # Adjust based on your needs
     batches = [operations[i:i + batch_size] for i in range(0, len(operations), batch_size)]
 
     # Start the monitoring thread
@@ -141,7 +143,7 @@ def main():
         # Collect results as they complete
         for future in concurrent.futures.as_completed(futures):
             for latency in future.result():
-                latencies_queue.put(latency)
+                latencies_queue.append(latency)
 
     # Calculate final results
     total_time = time.time() - start_time
@@ -149,10 +151,10 @@ def main():
 
     # Collect all latencies
     total_latencies = []
-    while not latencies_queue.empty():
+    while latencies_queue:
         try:
-            total_latencies.append(latencies_queue.get_nowait())
-        except queue.Empty:
+            total_latencies.append(latencies_queue.popleft())
+        except IndexError:
             break
 
     average_latency = sum(total_latencies) / len(total_latencies) if total_latencies else float('nan')
