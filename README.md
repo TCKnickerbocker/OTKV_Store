@@ -49,6 +49,13 @@ From the previous statistics and graphs, it is quite obvious that the more serve
 
 #### DEVNOTES:
 
+**IF RUNNING REGULARLY**
+
+In 3 separate terminals:
+python3 main.py<br/>
+
+
+**IF USING REDIS**
 Run 1 KV-Value on local:
 mac build (all separate terminals): $) redis-server <br/>
 then:<br/>
