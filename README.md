@@ -2,8 +2,6 @@
 
 ## Thomas Knickerbocker, Owen Ratgen
 
-## CSCI5980: Special Topics - Cloud Computing
-
 ## 1. Implementation Process
 
 We were able to get our KV-Store to use consistent hashing through a Python library called "uhashring" where it takes in N nodes that use N different hosts to ensure consistent hashing is being performed properly. We originally had our docker container working originally but we ran into a huge roadblock with DragonflyDB and need to discuss about whether or not we can still use it.
@@ -51,7 +49,11 @@ From the previous statistics and graphs, it is quite obvious that the more serve
 
 **IF RUNNING REGULARLY**
 
-For each terminal (node - default = 3)...
-1. Go into directory kv_store, download rust if you haven't already here https://doc.rust-lang.org/cargo/getting-started/installation.html#:~:text=Install%20Rust%20and%20Cargo&text=Installing%20Rust%20using%20rustup%20will%20also%20install%20cargo%20.&text=It%20will%20download%20a%20script%2C%20and%20start%20the%20installation, and run cargo build --release, then cargo run --release
-2. Go into a new terminal and run python3 benchmark.py
-
+1. Go into directory kv_store, download rust if you haven't already here https://doc.rust-lang.org/cargo/getting-started/installation.html#:~:text=Install%20Rust%20and%20Cargo&text=Installing%20Rust%20using%20rustup%20will%20also%20install%20cargo%20.&text=It%20will%20download%20a%20script%2C%20and%20start%20the%20installation, and then, in the terminal, run:
+`cargo build --release
+cargo run --release
+`
+3. Go into a new terminal and run:
+`pip3 install -r requirements.txt
+python3 benchmark.py`
+from the base directory
