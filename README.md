@@ -20,10 +20,10 @@ Our store logs every operation along with its timestamp in the logs folder, in a
 **Settings Used:**
 - NUM_THREADS = 10
 - OPS_PER_THREAD = 800
-- PRINT_INTERVAL = 1
+- PRINT_INTERVAL = 1 <br>
 
-<br>
-1 KV-Store Final Results:
+
+**1 KV-Store Final Results:**
 - Total operations: 24000
 - Total time: 9.56 seconds
 - Throughput: 2511.24 operations per second
@@ -31,7 +31,7 @@ Our store logs every operation along with its timestamp in the logs folder, in a
 
 ![1 Node Results](./img/1_node_latency_plot.png)
 
-2 KV-Stores Final Results:
+**2 KV-Stores Final Results:**
 - Total operations: 24000
 - Total time: 9.51 seconds
 - Throughput: 2523.65 operations per second
@@ -39,7 +39,7 @@ Our store logs every operation along with its timestamp in the logs folder, in a
 
 ![2_Node_Results](./img/2_node_latency_plot.png)
 
-3 KV-Stores Final Results:
+**3 KV-Stores Final Results:**
 - Total operations: 24000
 - Total time: 9.35 seconds
 - Throughput: 2567.69 operations per second
