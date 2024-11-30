@@ -6,12 +6,12 @@
 
 Our key-value store was first implemented in python and later converted into Rust. 
 <br>
-The python implementation uses flask with fastwsgi (which we found to be faster than fastAPI) as its web gateway and either a trie or dragonflydb (which can be seen as an improvement upon redis) as its kv_store, depending on the user's configurations. 
+- The python implementation uses flask with fastwsgi (which we found to be faster than fastAPI) as its web gateway and either a trie or dragonflydb (which can be seen as an improvement upon redis) as its kv_store, depending on the user's configurations. 
 Our store logs every operation along with its timestamp in the logs folder, in addition to periodically logging entirety of the kv_store elsewhere. 
 <br>
-Our Rust implementation leverages the actix webserver with a basic hashmap and a shared-state lock-protected dashmap to represent the state.
+- Our Rust implementation leverages the actix webserver with a basic hashmap and a shared-state lock-protected dashmap to represent the state.
 <br>
-Benchmark.py functions both as a benchmark and as a routing server for incoming requests. It utilizes a consistent and fast hashing algorithm based on the key of the request to determine which node within the hashring to forward that request to, and sends out requests in batches of threads that are monitored and reported upon during operation. 
+- Benchmark.py functions both as a benchmark and as a routing server for incoming requests. It utilizes a consistent and fast hashing algorithm based on the key of the request to determine which node within the hashring to forward that request to, and sends out requests in batches of threads that are monitored and reported upon during operation. 
 
 
 ## 2. Benchmarking Statistics (Rust)
@@ -24,24 +24,24 @@ Benchmark.py functions both as a benchmark and as a routing server for incoming 
 
 <br>
 1 KV-Store Final Results:
-Total operations: 24000
-Total time: 9.56 seconds
-Throughput: 2511.24 operations per second
-Average Latency: 0.00185 seconds per operation
-![1_Node_Results](./img/1_node_latency_plot.png)
+- Total operations: 24000
+- Total time: 9.56 seconds
+- Throughput: 2511.24 operations per second
+- Average Latency: 0.00185 seconds per operation
+![1 Node Results](./img/1_node_latency_plot.png)
 
 2 KV-Stores Final Results:
-Total operations: 24000
-Total time: 9.51 seconds
-Throughput: 2523.65 operations per second
-Average Latency: 0.00172 seconds per operation
+- Total operations: 24000
+- Total time: 9.51 seconds
+- Throughput: 2523.65 operations per second
+- Average Latency: 0.00172 seconds per operation
 ![2_Node_Results](./img/2_node_latency_plot.png)
 
 3 KV-Stores Final Results:
-Total operations: 24000
-Total time: 9.35 seconds
-Throughput: 2567.69 operations per second
-Average Latency: 0.00177 seconds per operation
+- Total operations: 24000
+- Total time: 9.35 seconds
+- Throughput: 2567.69 operations per second
+- Average Latency: 0.00177 seconds per operation
 ![3_Node_Results](./img/3_node_latency_plot.png)
 
 
