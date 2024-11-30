@@ -24,5 +24,4 @@ def set_value(key, value):
     # Safely set key-value pair using lock
     with kv_lock:
         kv_store.set(key, value)
-        # TODO: Forward to next in chain
         return 0

@@ -8,6 +8,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import concurrent.futures
 from uhashring import HashRing
+import matplotlib.pyplot as plt
 
 # Configure multiple nodes
 BASE_URLS = ['http://127.0.0.1:8080', 'http://127.0.0.1:8081', 'http://127.0.0.1:8082']
@@ -145,6 +146,9 @@ def main():
     # Starting benchmark
     start_time = time.time()
 
+    # Collect all latencies for plotting
+    all_latencies = []
+
     # Use ThreadPoolExecutor for better thread management
     with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
         # Submit all batches and collect futures
@@ -152,8 +156,10 @@ def main():
         
         # Collect results as they complete
         for future in concurrent.futures.as_completed(futures):
-            for latency in future.result():
+            batch_latencies = future.result()
+            for latency in batch_latencies:
                 latencies_queue.append(latency)
+                all_latencies.append(latency)
 
     # Calculate final results
     total_time = time.time() - start_time
@@ -181,7 +187,8 @@ def main():
     kv1 = 0
     kv2 = 0
     kv3 = 0
-
+    num_nodes = len(kv_stores)
+    
     for node in kv_stores:
         if node == 'http://127.0.0.1:8080':
             kv1 += 1
@@ -189,9 +196,21 @@ def main():
             kv2 += 1
         else:
             kv3 += 1
-    print(f"Percent of 8080 calls: {kv1/len(kv_stores) * 100:.4f}%")
-    print(f"Percent of 8081 calls: {kv2/len(kv_stores) * 100:.4f}%")
-    print(f"Percent of 8082 calls: {kv3/len(kv_stores) * 100:.4f}%")
+    print(f"Percent of 8080 calls: {kv1/len(num_nodes) * 100:.4f}%")
+    print(f"Percent of 8081 calls: {kv2/len(num_nodes) * 100:.4f}%")
+    print(f"Percent of 8082 calls: {kv3/len(num_nodes) * 100:.4f}%")
+    
+    
+    # Plotting Latency
+    plural = "" if len(num_nodes) == 1 else "s"
+    plt.figure(figsize=(12, 6))
+    plt.plot(range(len(all_latencies)), all_latencies, marker='.', linestyle='', alpha=0.5)
+    plt.title(f'Latency per Operation ({len(num_nodes)} node{plural}, with monitoring code)')
+    plt.xlabel('Operation Number')
+    plt.ylabel('Latency (seconds)')
+    plt.tight_layout()
+    plt.savefig('latency_plot.png')
+    plt.close()
 
 if __name__ == "__main__":
     main()
