@@ -14,13 +14,39 @@ Our store logs every operation along with its timestamp in the logs folder, in a
 - Benchmark.py functions both as a benchmark and as a routing server for incoming requests. It utilizes a consistent and fast hashing algorithm based on the key of the request to determine which node within the hashring to forward that request to, and sends out requests in batches of threads that are monitored and reported upon during operation. 
 
 
-## 2. Benchmarking Statistics (Rust)
+## 2: Benchmarking (Rust)
 **Ran on one 2024 M3 Macbook Air, 16Gigs RAM**
 
 **Settings Used:**
 - NUM_THREADS = 10
 - OPS_PER_THREAD = 800
 - PRINT_INTERVAL = 1 <br>
+
+
+### 2.1: Benchmarking Statistics (benchmark_and_plot.py)
+
+**1 KV-Stores Final Results:**
+- Total operations: 24000
+- Total time: 9.53 seconds
+- Throughput: 2517.42 operations per second
+- Average Latency: 0.00040 seconds per operation
+- Error Rate: 0.3333%
+
+**2 KV-Stores Final Results:**
+- Total operations: 24000
+- Total time: 9.91 seconds
+- Throughput: 2422.81 operations per second
+- Average Latency: 0.00041 seconds per operation
+- Error Rate: 0.0000%
+
+**3 KV-Stores Final Results:**
+- Total operations: 24000
+- Total time: 9.35 seconds
+- Throughput: 2566.24 operations per second
+- Average Latency: 0.00039 seconds per operation
+- Error Rate: 0.3333%
+
+### 2.2: Benchmarking Statistics (benchmark_and_plot.py)
 
 
 **1 KV-Store Final Results:**
