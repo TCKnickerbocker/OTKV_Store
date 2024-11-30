@@ -61,7 +61,7 @@ Our store logs every operation along with its timestamp in the logs folder, in a
 - Throughput: 2523.65 operations per second
 - Average Latency: 0.00172 seconds per operation <br>
 
-![2_Node_Results](./img/2_node_latency_plot.png)
+![2 Node Results](./img/2_node_latency_plot.png)
 
 **3 KV-Stores Final Results:**
 - Total operations: 24000
@@ -69,13 +69,17 @@ Our store logs every operation along with its timestamp in the logs folder, in a
 - Throughput: 2567.69 operations per second
 - Average Latency: 0.00177 seconds per operation <br>
   
-![3_Node_Results](./img/3_node_latency_plot.png)
+![3 Node Results](./img/3_node_latency_plot.png)
 
 
 From the previous statistics and graphs, it is quite obvious that the more servers we have for consistent hashing, the lower the overall and average latency will be but the higher the overall throughput will be. There are tradeoffs to the two but I would take performance over number of operations in a heart beat.
 
+## 3. File Structure:
+<img src="./img/File_Structure.png" alt="11/30/2024 File Structure" width="275" height="500"/>
 
-## Running (Rust)
+
+
+## 4. Running (Rust)
 
 1. Go into directory kv_store, download rust if you haven't already here https://doc.rust-lang.org/cargo/getting-started/installation.html#:~:text=Install%20Rust%20and%20Cargo&text=Installing%20Rust%20using%20rustup%20will%20also%20install%20cargo%20.&text=It%20will%20download%20a%20script%2C%20and%20start%20the%20installation, and python if necessary.
 Then in the terminal, run:
