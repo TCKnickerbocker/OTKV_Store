@@ -8,10 +8,8 @@ Our key-value store was first implemented in python and later converted into Rus
 <br>
 - The python implementation uses flask with fastwsgi (which we found to be faster than fastAPI) as its web gateway and either a trie or dragonflydb (which can be seen as an improvement upon redis) as its kv_store, depending on the user's configurations. 
 Our store logs every operation along with its timestamp in the logs folder, in addition to periodically logging entirety of the kv_store elsewhere. 
-<br>
-- Our Rust implementation leverages the actix webserver with a basic hashmap and a shared-state lock-protected dashmap to represent the state.
-<br>
-- Benchmark.py functions both as a benchmark and as a routing server for incoming requests. It utilizes a consistent and fast hashing algorithm based on the key of the request to determine which node within the hashring to forward that request to, and sends out requests in batches of threads that are monitored and reported upon during operation. 
+- The Rust implementation leverages the actix webserver with a basic hashmap and a shared-state lock-protected dashmap to represent the state.
+- Benchmark.py doubles as a benchmark and as a router for incoming requests. It utilizes a consistent and fast hashing algorithm based on the key of the request to determine which node within the hashring to forward that request to, and sends out requests in batches of threads that are monitored and reported upon during operation. 
 
 
 ## 2: Benchmarking (Rust)
