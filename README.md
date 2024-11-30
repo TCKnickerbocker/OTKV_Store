@@ -28,7 +28,6 @@ Our store logs every operation along with its timestamp in the logs folder, in a
 - Total time: 9.56 seconds
 - Throughput: 2511.24 operations per second
 - Average Latency: 0.00185 seconds per operation
-<br>
 ![1 Node Results](./img/1_node_latency_plot.png)
 
 2 KV-Stores Final Results:
@@ -44,7 +43,7 @@ Our store logs every operation along with its timestamp in the logs folder, in a
 - Total time: 9.35 seconds
 - Throughput: 2567.69 operations per second
 - Average Latency: 0.00177 seconds per operation
-<br>
+  
 ![3_Node_Results](./img/3_node_latency_plot.png)
 
 
